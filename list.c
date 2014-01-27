@@ -25,7 +25,7 @@ list_iter_p list_iterator(list_p list, char init){
 	return iter;
 }
 
-void list_add(list_p list, void* data, int size){
+void list_add(list_p list, void* data, int size, char position){
 	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
 	node->data = malloc(size);
 	memcpy(node->data, data, size);
@@ -37,10 +37,18 @@ void list_add(list_p list, void* data, int size){
 		list->last = node;
 	}
 	else{
-		list->last->next = node;
-		node->prev = list->last;
-		node->next = NULL;
-		list->last = node;
+        if(position==BACK){
+    		list->last->next = node;
+    		node->prev = list->last;
+    		node->next = NULL;
+    		list->last = node;
+        } 
+        else{
+    		list->first->prev = node;
+    		node->next = list->first;
+    		node->prev = NULL;
+    		list->first = node;
+        }
 	}
 	list->length++;
 }

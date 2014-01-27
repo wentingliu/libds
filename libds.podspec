@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/zhemao/libds"
   s.license      = 'MIT'
   s.author       = "zhemao"
-  s.source       = { :git => "https://github.com/zhemao/libds.git"}
+  s.source       = { :git => "https://github.com/wentingliu/libds.git"}
   s.source_files = 'ds.h', 'hashmap.{h,c}', 'heap.{h,c}', 'list.{h,c}', 'strutils.{h,c}', 'vector.{h,c}'
   s.requires_arc = true
 end

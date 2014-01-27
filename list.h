@@ -40,10 +40,11 @@ list_p create_list();
    or last item in the list */
 list_iter_p list_iterator(list_p list, char init);
 
-/* Add an item with the given value and size to the back of the list. 
-   The data is copied by value, so the original pointer must be freed if it
-   was allocated on the heap. */
-void list_add(list_p list, void* data, int size);
+/* Add an item with the given value and size to the list. The data is copied by value, 
+   so the original pointer must be freed if it was allocated on the heap. 
+   The flag positon can be either FRONT or BACK and indicates whether the item is added 
+   before the first or after the last item. */
+void list_add(list_p list, void* data, int size, char position);
 
 /* Gets the data stored in the first item of the list or NULL if the list is empty */
 void* list_first(list_p list);
