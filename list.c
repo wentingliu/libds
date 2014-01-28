@@ -153,21 +153,13 @@ void destroy_list(list_p list){
 
 void list_insert(list_p list, lnode_p before, void *data, int size){
     if (list->first == NULL) {
-        list_add(list, data, size);
+        list_add(list, data, size, BACK);
     } 
     else if (before == list->last) {
-        list_add(list, data, size);
+        list_add(list, data, size, BACK);
     }
     else if (before == NULL) {
-        lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
-        node->data = malloc(size);
-        memcpy(node->data, data, size);
-
-        node->next = list->first;
-        node->prev = NULL;
-        node->next->prev = node;
-        list->first = node;
-        list->length++;
+        list_add(list, data, size, FRONT);
     }
     else {
         lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
