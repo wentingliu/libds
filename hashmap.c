@@ -1,15 +1,16 @@
 #include "hashmap.h"
 #include <string.h>
 
-hashmap_p create_hashmap(){
+hashmap_p create_hashmap(bool copy_data){
 	hashmap_p m = (hashmap_p)malloc(sizeof(struct hashmap));
+    m->copy_data = copy_data;
 	int i;
 	m->size=0;
 	m->num_buckets = DEFAULT_NUM_BUCKETS;
 	m->buckets = (item_t**) malloc(sizeof(item_t*) * m->num_buckets);
 	for(i=0; i < m->num_buckets; i++)
 		m->buckets[i] = NULL;
-	m->keys = create_vector();
+	m->keys = create_vector(copy_data);
 	m->destructor = free;
 	return m;
 }
@@ -36,9 +37,14 @@ void hashmap_put(hashmap_p m, char* key, void* val, size_t len){
 	
 	while(itm!=NULL){
 		if(strcmp(key, itm->key)==0){
-		if(itm->val!=NULL) m->destructor(itm->val);
-		itm->val = malloc(len);
-		memcpy(itm->val, val, len);
+            if (m->copy_data){
+                if(itm->val!=NULL) m->destructor(itm->val);
+                itm->val = malloc(len);
+                memcpy(itm->val, val, len);
+            }
+            else{
+                itm->val = val;
+            }
 			return;
 		}
 		if(itm->next==NULL) last = itm;
@@ -48,8 +54,13 @@ void hashmap_put(hashmap_p m, char* key, void* val, size_t len){
 	itm = (item_t*)malloc(sizeof(item_t));
 	itm->key = malloc(keylen+1);
 	memcpy(itm->key, key, keylen+1);
-	itm->val = malloc(len);
-	memcpy(itm->val, val, len);
+    if (m->copy_data){
+        itm->val = malloc(len);
+        memcpy(itm->val, val, len);
+    }
+    else {
+        itm->val = val;
+    }
 	itm->next = NULL;
 	if(last==NULL) m->buckets[h] = itm;
 	else last->next = itm;
@@ -76,7 +87,9 @@ void hashmap_remove(hashmap_p m, char* key){
 		else last->next = itm->next;
 		
 		free(itm->key);
-		m->destructor(itm->val);
+        if (m->copy_data) {
+            m->destructor(itm->val);
+        }
 		free(itm);
 		
 		keyind = vector_index(m->keys, key, n);
@@ -101,7 +114,9 @@ void destroy_hashmap(hashmap_p m){
 		itm = m->buckets[x];
 		while(itm!=NULL){
 			free(itm->key);
-			m->destructor(itm->val);
+            if (m->copy_data) {
+                m->destructor(itm->val);
+            }
 			free(itm);
 			itm = itm->next;
 		}

@@ -3,8 +3,9 @@
 #include <string.h>
 
 
-list_p create_list(){
+list_p create_list(bool copy_data){
 	list_p list = (list_p) malloc(sizeof(struct list));
+    list->copy_data = copy_data;
 	list->length = 0;
 	list->first = NULL;
 	list->last = NULL;
@@ -27,8 +28,13 @@ list_iter_p list_iterator(list_p list, char init){
 
 void list_add(list_p list, void* data, int size, char position){
 	lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
-	node->data = malloc(size);
-	memcpy(node->data, data, size);
+    if (list->copy_data){
+        node->data = malloc(size);
+        memcpy(node->data, data, size);
+    }
+    else{
+        node->data = data;
+    }
 	
 	if(list->first==NULL){
 		node->prev = NULL;
@@ -144,7 +150,9 @@ void destroy_list(list_p list){
 	lnode_p next;
 	while(cur!=NULL){
 		next = cur->next;
-		list->destructor(cur->data);
+        if (list->copy_data) {
+            list->destructor(cur->data);
+        }
 		free(cur);
 		cur = next;
 	}
@@ -163,8 +171,12 @@ void list_insert(list_p list, lnode_p before, void *data, int size){
     }
     else {
         lnode_p node = (lnode_p)malloc(sizeof(struct linked_node));
-        node->data = malloc(size);
-        memcpy(node->data, data, size);
+        if (list->copy_data) {
+            node->data = malloc(size);
+            memcpy(node->data, data, size);
+        } else {
+            node->data = data;
+        }
 
         node->next = before->next;
         node->prev = before;
@@ -195,6 +207,7 @@ void* list_pluck(list_p list, lnode_p removed){
         removed->next->prev = removed->prev;
     }
 
+    
     void* data = removed->data;
     free(removed);
     list->length--;

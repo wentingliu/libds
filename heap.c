@@ -4,7 +4,7 @@
 
 heap_p create_heap(heapcmpfunc cmpfunc){
 	heap_p hp = (heap_p) malloc(sizeof(struct heap));
-	hp->vec = create_vector();
+	hp->vec = create_vector(true);
 	hp->cmpfunc = cmpfunc;
 
 	return hp;

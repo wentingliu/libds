@@ -5,6 +5,7 @@
    Uses string keys but has void pointer values */
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include "vector.h"
 
 #define DEFAULT_NUM_BUCKETS 101
@@ -18,6 +19,7 @@ struct item{
 typedef struct item item_t;
 
 struct hashmap{
+    bool copy_data;
 	item_t** buckets;
 	vector_p keys;
 	void (*destructor)(void*);
@@ -28,19 +30,20 @@ struct hashmap{
 typedef struct hashmap * hashmap_p;
 
 /* Create a new hashmap. The hashmap created by this method must be eventually 
-   destroyed by a call to destroy_hashmap() to avoid memory leak */
-hashmap_p create_hashmap();
+   destroyed by a call to destroy_hashmap() to avoid memory leak.The flag copy_data
+   indicates whether the value of an item should be copied or not when it is added to list */
+hashmap_p create_hashmap(bool copy_data);
 
 /* Place an entry with the value val and length len into the hashmap m and associate
-   it with the key key. The key and value are copied by value, not by pointer,
-   so if they were created on the heap, they must be freed later. */
+   it with the key key. If flag copy_data is set to true, the key and value are copied by value,
+   not by pointer, so if they were created on the heap, they must be freed later. */
 void hashmap_put(hashmap_p m, char* key, void* val, size_t len);
 
 /* Get the value of the entry in hashmap m associated with key key */
 void* hashmap_get(hashmap_p m, char* key);
 
-/* Remove the item associated with the key key in the hashmap m. The memory for the
-   entry is completely freed, so use hashmap_get and make a deep copy if you wish to
+/* Remove the item associated with the key key in the hashmap m. If flag copy_data is set to true, 
+   the memory for the entry is completely freed, so use hashmap_get and make a deep copy if you wish to
    retain it. */
 void hashmap_remove(hashmap_p m, char* key);
 
